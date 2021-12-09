@@ -1,0 +1,24 @@
+version: '3.9'
+
+volumes:
+   geoserver-cluster-data:
+      driver_opts:
+        type: cifs
+        o: "username=geoserver,password=nas123456,vers=2.0,file_mode=0777,dir_mode=0777"
+        device: "//192.168.31.88/geoservernas/data_dir"
+services:
+   geoserver:
+      image: puhou/gs:1.0
+      volumes:
+         - geoserver-cluster-data:/opt/geoserver/data_dir
+      ports:
+        - "8081:8080"
+      environment:
+        - GEOSERVER_ADMIN_USER=admin
+        - GEOSERVER_ADMIN_PASSWORD=geoserver
+      restart: on-failure
+      healthcheck:
+        test: curl --fail -s http://localhost:8080/ || exit 1
+        interval: 1m30s
+        timeout: 10s
+        retries: 3

@@ -2,11 +2,15 @@ version: '3'
 
 volumes:
    geoserver-data:
-
+      geoserver-cluster-data:
+      driver_opts:
+        type: cifs
+        o: "username=geoserver,password=nas123456,vers=2.0,file_mode=0777,dir_mode=0777"
+        device: "//192.168.31.88/geoservernas/data_dir"
 services:
 
    geoserver:
-      image: kartoza/geoserver:${GS_VERSION}
+      image:  puhou/gs:1.0 
       build:
         context: .
         args:

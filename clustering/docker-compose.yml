@@ -2,13 +2,22 @@ version: '3.9'
 
 volumes:
    geoserver-cluster-data:
+      driver_opts:
+        type: cifs
+        o: "username=geoserver,password=nas123456,vers=2.0,file_mode=0777,dir_mode=0777"
+        device: "//192.168.31.88/geoservernas/data_dir"
    geo-db-data:
-
+      driver_opts:
+        type: cifs
+        o: "username=geoserver,password=nas123456,vers=2.0,file_mode=0777,dir_mode=0777"
+        device: "//192.168.31.88/geoservernas/db_dir"
 services:
    db:
       image: kartoza/postgis:14-3.1
       volumes:
         - geo-db-data:/var/lib/postgresql
+      ports:
+        - "5432:5432"
       environment:
         - POSTGRES_DB=gis
         - POSTGRES_USER=docker

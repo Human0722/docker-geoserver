@@ -2,27 +2,13 @@ version: '3.9'
 
 volumes:
    geoserver-data:
-   geo-db-data:
-
+      driver_opts:
+        type: cifs
+        o: "username=geoserver,password=nas123456,vers=2.0,file_mode=0777,dir_mode=0777"
+        device: "192.168.31.88/geoservernas/data_dir"
 services:
-   db:
-      image: kartoza/postgis:${POSTGIS_VERSION_TAG}
-      volumes:
-         - geo-db-data:/var/lib/postgresql
-      ports:
-        - ${POSTGRES_PORT}:5432
-      environment:
-        - POSTGRES_DB=${POSTGRES_DB}
-        - POSTGRES_USER=${POSTGRES_USER}
-        - POSTGRES_PASS=${POSTGRES_PASS}
-        - ALLOW_IP_RANGE=${ALLOW_IP_RANGE}
-        - FORCE_SSL=TRUE
-      restart: on-failure
-      healthcheck:
-        test: "exit 0"
-
    geoserver:
-      image: kartoza/geoserver:${GS_VERSION}
+      image: puhou/gs:1.0
       volumes:
         - geoserver-data:/opt/geoserver/data_dir
       ports:
@@ -31,13 +17,10 @@ services:
       environment:
         - GEOSERVER_DATA_DIR=${GEOSERVER_DATA_DIR}
         - GEOWEBCACHE_CACHE_DIR=${GEOWEBCACHE_CACHE_DIR}
-        - GEOSERVER_ADMIN_PASSWORD=${GEOSERVER_ADMIN_PASSWORD}
-        - GEOSERVER_ADMIN_USER=${GEOSERVER_ADMIN_USER}
+        - GEOSERVER_ADMIN_PASSWORD=geoserver
+        - GEOSERVER_ADMIN_USER=admin
         - INITIAL_MEMORY=${INITIAL_MEMORY}
         - MAXIMUM_MEMORY=${MAXIMUM_MEMORY}
-      depends_on:
-        db:
-          condition: service_healthy
       healthcheck:
         test: curl --fail -s http://localhost:8080/ || exit 1
         interval: 1m30s

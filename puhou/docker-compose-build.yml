@@ -7,11 +7,6 @@ volumes:
         o: "username=geoserver,password=nas123456,vers=2.0,file_mode=0777,dir_mode=0777"
         device: "//192.168.31.88/geoservernas/data_dir"
    geo-db-data:
-      driver_opts:
-        type: cifs
-        o: "username=geoserver,password=nas123456,vers=2.0,file_mode=0777,dir_mode=0777"
-        device: "//192.168.31.88/geoservernas/cache_db"
-
 services:
    db:
       image: kartoza/postgis:14-3.1
